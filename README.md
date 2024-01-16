@@ -2,7 +2,7 @@
 
 ## intro
 
-- use python
+- use python 3.11
 - use TensorFlow or PyTorch?
 
 ## what's new 
