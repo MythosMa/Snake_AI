@@ -1,5 +1,5 @@
-from config import *
-from snakeBlock import SnakeBlock
+from .config import *
+from .snakeBlock import SnakeBlock
 import pygame
 
 class Snake:
@@ -85,8 +85,17 @@ class Snake:
         self.direction = direction
         self.isInputDirection = True
 
+    def getDirection(self):
+        return self.direction
+
     def getSnakeBody(self):
         return self.bodyInfo
+    
+    def getSnakeBodyPositions(self):
+        positions = []
+        for i in range(0, self.snakeLength):
+            positions.append((self.bodyInfo[i][0], self.bodyInfo[i][1]))
+        return positions
         
     def checkIsDead(self):
         return self.isDead

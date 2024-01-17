@@ -10,3 +10,4 @@ class SnakeDirection(Enum):
     RIGHT = 2
     DOWN = 3
     LEFT = 4
+    RESET = 5
