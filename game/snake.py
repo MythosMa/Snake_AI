@@ -3,9 +3,9 @@ from .snakeBlock import SnakeBlock
 import pygame
 
 class Snake:
-    def __init__(self, tileWidth, tileHeight, tileCountX, tileCountY, screen) -> None:
+    def __init__(self, initLength, tileWidth, tileHeight, tileCountX, tileCountY, screen) -> None:
         self.screen = screen
-        self.snakeLength = 3
+        self.snakeLength = initLength
         self.tileCountX = tileCountX
         self.tileCountY = tileCountY
         self.tileWidth = tileWidth
@@ -14,61 +14,58 @@ class Snake:
         self.bodyInfo = []
         self.isInputDirection = False
         for i in range(self.snakeLength):
-            self.bodyInfo.append([(2 - i), 0, SnakeBlock((2 - i), 0, tileWidth, tileHeight, "green" if i == 0 else "white")])
+            self.bodyInfo.append([(self.snakeLength - i), 0, SnakeBlock((self.snakeLength - i), 0, tileWidth, tileHeight, "green" if i == 0 else "white")])
             self.bodySpriteGroup.add(self.bodyInfo[i][2])
 
         self.direction = SnakeDirection.RIGHT
-        self.moveInterval = 0.1
-        self.moveCold = 0
-        self.isDead = False
 
-    def update(self, deltaTime, food, score):
-        self.moveCold += deltaTime
-        if(self.moveCold > self.moveInterval):
-            self.moveCold = 0
+    def update(self, food, score):
+        reword = 0
+        # b保存尾巴坐标，用来新增吃到食物后的身体
+        newBodyInfo = [self.bodyInfo[self.snakeLength - 1][0], self.bodyInfo[self.snakeLength - 1][1]]
 
-            # b保存尾巴坐标，用来新增吃到食物后的身体
-            newBodyInfo = [self.bodyInfo[self.snakeLength - 1][0], self.bodyInfo[self.snakeLength - 1][1]]
+        # 移动身体
+        for i in range(self.snakeLength - 1, 0, -1):
+            self.bodyInfo[i][0] = self.bodyInfo[i - 1][0]
+            self.bodyInfo[i][1] = self.bodyInfo[i - 1][1]
+            self.bodyInfo[i][2].setPosition( self.bodyInfo[i][0], self.bodyInfo[i][1])
 
-            # 移动身体
-            for i in range(self.snakeLength - 1, 0, -1):
-                self.bodyInfo[i][0] = self.bodyInfo[i - 1][0]
-                self.bodyInfo[i][1] = self.bodyInfo[i - 1][1]
-                self.bodyInfo[i][2].setPosition( self.bodyInfo[i][0], self.bodyInfo[i][1])
+        # 移动头部
+        if self.direction == SnakeDirection.RIGHT:
+            self.bodyInfo[0][0] += 1
+        if self.direction == SnakeDirection.LEFT:
+            self.bodyInfo[0][0] -= 1
+        if self.direction == SnakeDirection.UP:
+            self.bodyInfo[0][1] -= 1
+        if self.direction == SnakeDirection.DOWN:
+            self.bodyInfo[0][1] += 1
+        
+        self.isInputDirection = False
 
-            # 移动头部
-            if self.direction == SnakeDirection.RIGHT:
-                self.bodyInfo[0][0] += 1
-            if self.direction == SnakeDirection.LEFT:
-                self.bodyInfo[0][0] -= 1
-            if self.direction == SnakeDirection.UP:
-                self.bodyInfo[0][1] -= 1
-            if self.direction == SnakeDirection.DOWN:
-                self.bodyInfo[0][1] += 1
+        self.bodyInfo[0][2].setPosition( self.bodyInfo[0][0], self.bodyInfo[0][1])
+
+        if self.bodyInfo[0][0] < 0 or self.bodyInfo[0][0] > self.tileCountX - 1 or self.bodyInfo[0][1] < 0 or self.bodyInfo[0][1] > self.tileCountY - 1:
+            reword = -1
+            return reword, True
+
+        for i in range(self.snakeLength - 1, 0, -1):
+            if self.bodyInfo[i][0] == self.bodyInfo[0][0] and self.bodyInfo[i][1] == self.bodyInfo[0][1]:
+                reword = -1
+                return reword, True
             
-            self.isInputDirection = False
-
-            self.bodyInfo[0][2].setPosition( self.bodyInfo[0][0], self.bodyInfo[0][1])
-
-            if self.bodyInfo[0][0] < 0 or self.bodyInfo[0][0] > self.tileCountX - 1 or self.bodyInfo[0][1] < 0 or self.bodyInfo[0][1] > self.tileCountY - 1:
-                self.isDead = True
-                return
-
-            for i in range(self.snakeLength - 1, 0, -1):
-                if self.bodyInfo[i][0] == self.bodyInfo[0][0] and self.bodyInfo[i][1] == self.bodyInfo[0][1]:
-                    self.isDead = True
-                    return
-                
-            foodPosition = food.getPosition()
-            if self.bodyInfo[0][0] == foodPosition[0] and self.bodyInfo[0][1] == foodPosition[1]:
-                score.addScore()
-                food.eat()
-                newBodyInfo.append(SnakeBlock(newBodyInfo[0], newBodyInfo[1], self.tileWidth, self.tileHeight, "white"))
-                self.bodySpriteGroup.add(newBodyInfo[2])
-                self.bodyInfo.append(newBodyInfo)
-                self.snakeLength = len(self.bodyInfo)
+        foodPosition = food.getPosition()
+        if self.bodyInfo[0][0] == foodPosition[0] and self.bodyInfo[0][1] == foodPosition[1]:
+            reword = 1
+            score.addScore()
+            food.eat()
+            newBodyInfo.append(SnakeBlock(newBodyInfo[0], newBodyInfo[1], self.tileWidth, self.tileHeight, "white"))
+            self.bodySpriteGroup.add(newBodyInfo[2])
+            self.bodyInfo.append(newBodyInfo)
+            self.snakeLength = len(self.bodyInfo)
             
         self.bodySpriteGroup.draw(self.screen)
+
+        return reword, False
 
     def changeDirection(self, direction):
         if self.isInputDirection:
@@ -90,12 +87,4 @@ class Snake:
 
     def getSnakeBody(self):
         return self.bodyInfo
-    
-    def getSnakeBodyPositions(self):
-        positions = []
-        for i in range(0, self.snakeLength):
-            positions.append((self.bodyInfo[i][0], self.bodyInfo[i][1]))
-        return positions
         
-    def checkIsDead(self):
-        return self.isDead
