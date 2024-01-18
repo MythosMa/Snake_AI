@@ -129,24 +129,45 @@ class AIGame:
         isSnakeToUp = self.snake.getDirection() == SnakeDirection.UP
         isSnakeToDown = self.snake.getDirection() == SnakeDirection.DOWN
 
+        def checkCollisionBody(target):
+            snakeLength = len(self.snake.getSnakeBody())
+            body = self.snake.getSnakeBody()
+            for i in range(snakeLength - 1, 0, -1):
+                if body[i][0] == target[0] and body[i][1] == target[1]:
+                    return True
+                
+            return False
+
         state = [
             # 向前是否会导致死亡
             (isSnakeToLeft and snakeHead[0] == 0) or 
+            (isSnakeToLeft and checkCollisionBody([snakeHead[0] - 1, snakeHead[1]])) or
             (isSnakeToDown and snakeHead[1] == self.tileCountY - 1) or 
+            (isSnakeToDown and checkCollisionBody([snakeHead[0], snakeHead[1] + 1])) or
             (isSnakeToRight and snakeHead[0] == self.tileCountX - 1) or 
-            (isSnakeToUp and snakeHead[1] == 0),
+            (isSnakeToRight and checkCollisionBody([snakeHead[0] + 1, snakeHead[1]])) or
+            (isSnakeToUp and snakeHead[1] == 0) or
+            (isSnakeToUp and checkCollisionBody([snakeHead[0], snakeHead[1] - 1])),
 
             # 向左是否会导致死亡
             (isSnakeToLeft and snakeHead[1] == self.tileCountY - 1) or
+            (isSnakeToLeft and checkCollisionBody([snakeHead[0], snakeHead[1] + 1])) or
             (isSnakeToDown and snakeHead[0] == self.tileCountX - 1) or
+            (isSnakeToDown and checkCollisionBody([snakeHead[0] + 1, snakeHead[1]])) or
             (isSnakeToRight and snakeHead[1] == 0) or
-            (isSnakeToUp and snakeHead[0] == 0),
+            (isSnakeToRight and checkCollisionBody([snakeHead[0], snakeHead[1] - 1])) or
+            (isSnakeToUp and snakeHead[0] == 0) or
+            (isSnakeToUp and checkCollisionBody([snakeHead[0] - 1, snakeHead[1]])),
 
             # 向右是否会导致死亡
             (isSnakeToLeft and snakeHead[1] == 0) or
+            (isSnakeToLeft and checkCollisionBody([snakeHead[0], snakeHead[1] - 1])) or
             (isSnakeToDown and snakeHead[0] == 0) or
+            (isSnakeToDown and checkCollisionBody([snakeHead[0] - 1, snakeHead[1]])) or
             (isSnakeToRight and snakeHead[1] == self.tileCountY - 1) or
-            (isSnakeToUp and snakeHead[0] == self.tileCountX - 1),
+            (isSnakeToRight and checkCollisionBody([snakeHead[0], snakeHead[1] + 1])) or
+            (isSnakeToUp and snakeHead[0] == self.tileCountX - 1) or
+            (isSnakeToUp and checkCollisionBody([snakeHead[0] + 1, snakeHead[1]])),
 
             # 移动方向
             isSnakeToLeft, isSnakeToDown, isSnakeToRight, isSnakeToUp,
