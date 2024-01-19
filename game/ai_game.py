@@ -111,15 +111,15 @@ class AIGame:
         self.food.update(self.screen, self.snake.getSnakeBody(), self.tileCountX, self.tileCountY)
 
         if self.notEatTime >= self.notEatLimit * len(self.snake.getSnakeBody()):
-            return -1, True
+            return -1, True, self.score.getScore()
         else:
-            reword, isDead = self.snake.update(self.food, self.score)
+            reward, isDead = self.snake.update(self.food, self.score)
 
         self.score.draw()
         pygame.display.flip()
         self.clock.tick(self.gameSpeed)
 
-        return reword, isDead
+        return reward, isDead, self.score.getScore()
     
     def getGameState(self):
         # 判断各个方向是否为墙

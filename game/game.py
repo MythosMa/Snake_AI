@@ -52,7 +52,7 @@ class Game:
             self.snake.changeDirection(SnakeDirection.RIGHT)
                 
         self.food.update(self.screen, self.snake.getSnakeBody(), self.tileCountX, self.tileCountY)
-        reword, isDead = self.snake.update(self.food, self.score)
+        reward, isDead = self.snake.update(self.food, self.score)
 
         self.score.draw()
         pygame.display.flip()

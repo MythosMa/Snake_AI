@@ -20,7 +20,7 @@ class Snake:
         self.direction = SnakeDirection.RIGHT
 
     def update(self, food, score):
-        reword = 0
+        reward = 0
         # b保存尾巴坐标，用来新增吃到食物后的身体
         newBodyInfo = [self.bodyInfo[self.snakeLength - 1][0], self.bodyInfo[self.snakeLength - 1][1]]
 
@@ -45,17 +45,17 @@ class Snake:
         self.bodyInfo[0][2].setPosition( self.bodyInfo[0][0], self.bodyInfo[0][1])
 
         if self.bodyInfo[0][0] < 0 or self.bodyInfo[0][0] > self.tileCountX - 1 or self.bodyInfo[0][1] < 0 or self.bodyInfo[0][1] > self.tileCountY - 1:
-            reword = -1
-            return reword, True
+            reward = -1
+            return reward, True
 
         for i in range(self.snakeLength - 1, 0, -1):
             if self.bodyInfo[i][0] == self.bodyInfo[0][0] and self.bodyInfo[i][1] == self.bodyInfo[0][1]:
-                reword = -1
-                return reword, True
+                reward = -1
+                return reward, True
             
         foodPosition = food.getPosition()
         if self.bodyInfo[0][0] == foodPosition[0] and self.bodyInfo[0][1] == foodPosition[1]:
-            reword = 1
+            reward = 1
             score.addScore()
             food.eat()
             newBodyInfo.append(SnakeBlock(newBodyInfo[0], newBodyInfo[1], self.tileWidth, self.tileHeight, "white"))
@@ -65,7 +65,7 @@ class Snake:
             
         self.bodySpriteGroup.draw(self.screen)
 
-        return reword, False
+        return reward, False
 
     def changeDirection(self, direction):
         if self.isInputDirection:

@@ -7,7 +7,9 @@ MAX_MEMORY = 100000
 BATCH_SIZE = 1000
 LR = 0.001 # 学习率
 
+# 定义一个SnakeAIController类，用于控制AI游戏
 class SnakeAIController:
+    # 初始化类，设置游戏次数、epsilon、gamma、模型、记忆库、训练器
     def __init__(self):
         self.gameTimes = 0
         self.epsilon = 0 
@@ -16,9 +18,12 @@ class SnakeAIController:
         self.memory = deque(maxlen=MAX_MEMORY) 
         self.trainer = SnakeAITrainer(self.model, lr=LR, gamma=self.gamma)
 
+    # 添加记忆功能，将状态、动作、奖励、下一个状态、是否结束添加到记忆库中
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
+    # 训练长记忆，如果记忆库中的状态数量大于BATCH_SIZE，则从记忆库中随机抽取BATCH_SIZE个状态，否则使用全部状态；
+    # 获取状态、动作、奖励、下一个状态、是否结束，并传入训练器中训练一步；
     def trainLongMemory(self):
         if len(self.memory) > BATCH_SIZE:
             mini_sample = random.sample(self.memory, BATCH_SIZE)
@@ -29,9 +34,11 @@ class SnakeAIController:
         self.trainer.trainStep(states, actions, rewards, next_states, dones)
 
 
+    # 训练短记忆，将状态、动作、奖励、下一个状态、是否结束传入训练器中训练一步；
     def trainShortMemory(self, state, action, reward, next_state, done):
         self.trainer.trainStep(state, action, reward, next_state, done)
 
+    # 根据状态获取动作，如果随机因子小于 epsilon，则随机获取动作，否则根据状态获取动作；
     def getAction(self, state):
         self.epsilon = 80 - self.gameTimes
         final_move = [0,0,0]

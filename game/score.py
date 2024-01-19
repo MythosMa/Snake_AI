@@ -9,6 +9,9 @@ class Score:
     def addScore(self, points = 1):
         self.score += points
 
+    def getScore(self):
+        return self.score
+
     def draw(self):
         text_surface =  self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         text_rect = text_surface.get_rect()
