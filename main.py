@@ -2,6 +2,7 @@ import time
 from game.game import *
 from game.ai_game import *
 from ai.controller import *
+from helper.helper import *
 
 isAIPlay = True
 
@@ -11,6 +12,9 @@ tileCountY = 30
 aiContoller = SnakeAIController()
 
 recordScore = 0
+plot_scores = []
+plot_mean_scores = []
+total_score = 0
 
 game = AIGame(tileCountX, tileCountY) if isAIPlay else Game(tileCountX, tileCountY)
 game.initGame()
@@ -35,6 +39,13 @@ while True:
             if score > recordScore:
                 recordScore = score
                 aiContoller.model.save()
+                
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / aiContoller.gameTimes
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
+            
             print(f"Game {aiContoller.gameTimes} end. Score Recore: {recordScore}")
 
         time.sleep(1)

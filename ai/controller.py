@@ -19,8 +19,8 @@ class SnakeAIController:
         self.trainer = SnakeAITrainer(self.model, lr=LR, gamma=self.gamma)
 
     # 添加记忆功能，将状态、动作、奖励、下一个状态、是否结束添加到记忆库中
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
+    def remember(self, state, action, reward, nextState, done):
+        self.memory.append((state, action, reward, nextState, done))
 
     # 训练长记忆，如果记忆库中的状态数量大于BATCH_SIZE，则从记忆库中随机抽取BATCH_SIZE个状态，否则使用全部状态；
     # 获取状态、动作、奖励、下一个状态、是否结束，并传入训练器中训练一步；
@@ -35,8 +35,8 @@ class SnakeAIController:
 
 
     # 训练短记忆，将状态、动作、奖励、下一个状态、是否结束传入训练器中训练一步；
-    def trainShortMemory(self, state, action, reward, next_state, done):
-        self.trainer.trainStep(state, action, reward, next_state, done)
+    def trainShortMemory(self, state, action, reward, nextState, done):
+        self.trainer.trainStep(state, action, reward, nextState, done)
 
     # 根据状态获取动作，如果随机因子小于 epsilon，则随机获取动作，否则根据状态获取动作；
     def getAction(self, state):

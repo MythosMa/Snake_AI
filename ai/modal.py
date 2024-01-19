@@ -26,13 +26,13 @@ class SnakeAIModal(nn.Module):
     # 定义保存函数，输入参数为文件名，默认为model.pth
     def save(self, file_name='model.pth'):
         # 定义模型文件夹路径
-        model_folder_path = './model'
+        modelFolderPath = './model'
         # 如果模型文件夹不存在，则创建模型文件夹
-        if not os.path.exists(model_folder_path):
-            os.makedirs(model_folder_path)
+        if not os.path.exists(modelFolderPath):
+            os.makedirs(modelFolderPath)
 
         # 拼接模型文件路径
-        file_name = os.path.join(model_folder_path, file_name)
+        file_name = os.path.join(modelFolderPath, file_name)
         # 保存模型参数
         torch.save(self.state_dict(), file_name)
     
@@ -52,10 +52,10 @@ class SnakeAITrainer:
         self.criterion = nn.MSELoss()
 
     # 定义训练函数，输入参数为状态、动作、奖励、下一个状态和完成标志
-    def trainStep(self, state, action, reward, next_state, done):
+    def trainStep(self, state, action, reward, nextState, done):
         # 将状态、下一个状态、动作、奖励转换为tensor，数据类型为float
         state = torch.tensor(state, dtype=torch.float)
-        next_state = torch.tensor(next_state, dtype=torch.float)
+        nextState = torch.tensor(nextState, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
 
@@ -63,7 +63,7 @@ class SnakeAITrainer:
         if len(state.shape) == 1:
             # (1, x)
             state = torch.unsqueeze(state, 0)
-            next_state = torch.unsqueeze(next_state, 0)
+            nextState = torch.unsqueeze(nextState, 0)
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
             done = (done, )
@@ -79,7 +79,7 @@ class SnakeAITrainer:
             Q_new = reward[idx]
             # 如果完成标志为False，则新的Q值为奖励加上折扣因子乘以模型输出中最大Q值
             if not done[idx]:
-                Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+                Q_new = reward[idx] + self.gamma * torch.max(self.model(nextState[idx]))
 
             # 将新的Q值赋值给目标值
             target[idx][torch.argmax(action[idx]).item()] = Q_new
