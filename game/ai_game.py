@@ -77,7 +77,7 @@ class AIGame:
         self.score = None
         self.food = None
         self.dead = None
-        self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给100步的限额
+        self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给500步的限额
         self.notEatLimit = 100
 
     # 初始化游戏，设置蛇，分数，食物，死亡图片

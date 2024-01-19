@@ -26,11 +26,11 @@ class SnakeAIController:
             mini_sample = self.memory
 
         states, actions, rewards, next_states, dones = zip(*mini_sample)
-        self.trainer.train_step(states, actions, rewards, next_states, dones)
+        self.trainer.trainStep(states, actions, rewards, next_states, dones)
 
 
     def trainShortMemory(self, state, action, reward, next_state, done):
-        self.trainer.train_step(state, action, reward, next_state, done)
+        self.trainer.trainStep(state, action, reward, next_state, done)
 
     def getAction(self, state):
         self.epsilon = 80 - self.gameTimes

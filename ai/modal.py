@@ -52,7 +52,7 @@ class SnakeAITrainer:
         self.criterion = nn.MSELoss()
 
     # 定义训练函数，输入参数为状态、动作、奖励、下一个状态和完成标志
-    def train_step(self, state, action, reward, next_state, done):
+    def trainStep(self, state, action, reward, next_state, done):
         # 将状态、下一个状态、动作、奖励转换为tensor，数据类型为float
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
