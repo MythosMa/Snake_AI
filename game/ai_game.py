@@ -63,6 +63,15 @@ from .dead import *
 # 但是在此之后，由于蛇自身的身体已经很长，会出现两种情况，1.为了避免撞上身体产生的绕路，导致超过给定时间而死；2.在寻找食物时卷到自己身体围成的死胡同里，导致撞上自己而死
 # 对于问题1，可以使用更宽松的时间限制条件解决。对于问题2，如何让AI实现路径规划，是一个难点。
 # 在现在这个时候，我想能否将整个地图数据传递给训练模型，看AI能否从宏观方向上了解整体布局，自我规划。
+# 依然以矩阵为例，9的位置代表食物，2的位置代表蛇头，1的位置代表蛇身，0的位置表示空地。
+#  0 0 0 0 0 0 0 0 
+#  2 1 1 0 0 0 0 0
+#  0 0 0 0 0 0 0 0 
+#  0 0 0 0 0 0 0 0 
+#  0 0 0 0 0 9 0 0 
+#  0 0 0 0 0 0 0 0 
+#  0 0 0 0 0 0 0 0 
+#  0 0 0 0 0 0 0 0 
 
 class AIGame:
     # 初始化游戏，设置屏幕大小，单个tile的宽度，高度，以及屏幕
@@ -83,8 +92,9 @@ class AIGame:
         self.score = None
         self.food = None
         self.dead = None
-        self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给500步的限额
+        self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给100步的限额
         self.notEatLimit = 100
+        self.notEatLimitUpRate = 1.5
 
     # 初始化游戏，设置蛇，分数，食物，死亡图片
     def initGame(self):
@@ -116,7 +126,7 @@ class AIGame:
 
         self.food.update(self.screen, self.snake.getSnakeBody(), self.tileCountX, self.tileCountY)
 
-        if self.notEatTime >= self.notEatLimit * len(self.snake.getSnakeBody()):
+        if self.notEatTime >= self.notEatLimit * len(self.snake.getSnakeBody()) * self.notEatLimitUpRate:
             return -1, True, self.score.getScore()
         else:
             reward, isDead = self.snake.update(self.food, self.score)
@@ -134,15 +144,28 @@ class AIGame:
         isSnakeToLeft = self.snake.getDirection() == SnakeDirection.LEFT
         isSnakeToUp = self.snake.getDirection() == SnakeDirection.UP
         isSnakeToDown = self.snake.getDirection() == SnakeDirection.DOWN
-
+        
+        snakeLength = len(self.snake.getSnakeBody())
+        body = self.snake.getSnakeBody()
+        
         def checkCollisionBody(target):
-            snakeLength = len(self.snake.getSnakeBody())
-            body = self.snake.getSnakeBody()
             for i in range(snakeLength - 1, 0, -1):
                 if body[i][0] == target[0] and body[i][1] == target[1]:
                     return True
-                
             return False
+        
+        # 创建地图信息
+        mapInfo = [[0 for _ in range(self.tileCountX)] for _ in range(self.tileCountY)]
+
+        # 在地图中添加蛇的位置信息
+        for i in range(snakeLength - 1, 0, -1):
+            if(i == 0):
+                mapInfo[body[i][1]][body[i][0]] = 2
+            else:
+                mapInfo[body[i][1]][body[i][0]] = 1
+        
+        # 在地图中添加食物的位置信息
+        mapInfo[body[i][1]][body[i][0]] = 9
 
         state = [
             # 向前是否会导致死亡
@@ -188,5 +211,9 @@ class AIGame:
             # 在下边
             self.food.getPosition()[1] > snakeHead[1],
         ]
+
+        # 将地图信息追加到state 中 
+        for sublist in mapInfo:
+            state.extend(sublist)
 
         return np.array(state, dtype=int)

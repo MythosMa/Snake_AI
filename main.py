@@ -9,7 +9,7 @@ isAIPlay = True
 tileCountX = 30
 tileCountY = 30
 
-aiContoller = SnakeAIController()
+aiContoller = SnakeAIController(tileCountX, tileCountY)
 
 recordScore = 0
 plot_scores = []
@@ -50,4 +50,4 @@ while True:
 
         time.sleep(1)
         game.initGame()
-        
+    
