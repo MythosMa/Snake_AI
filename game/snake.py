@@ -45,17 +45,17 @@ class Snake:
         self.bodyInfo[0][2].setPosition( self.bodyInfo[0][0], self.bodyInfo[0][1])
 
         if self.bodyInfo[0][0] < 0 or self.bodyInfo[0][0] > self.tileCountX - 1 or self.bodyInfo[0][1] < 0 or self.bodyInfo[0][1] > self.tileCountY - 1:
-            reward = -1
+            reward = -2
             return reward, True
 
         for i in range(self.snakeLength - 1, 0, -1):
             if self.bodyInfo[i][0] == self.bodyInfo[0][0] and self.bodyInfo[i][1] == self.bodyInfo[0][1]:
-                reward = -1
+                reward = -2
                 return reward, True
             
         foodPosition = food.getPosition()
         if self.bodyInfo[0][0] == foodPosition[0] and self.bodyInfo[0][1] == foodPosition[1]:
-            reward = 1
+            reward = 2
             score.addScore()
             food.eat()
             newBodyInfo.append(SnakeBlock(newBodyInfo[0], newBodyInfo[1], self.tileWidth, self.tileHeight, "white"))

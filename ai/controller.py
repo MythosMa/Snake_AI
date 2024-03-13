@@ -16,7 +16,7 @@ class SnakeAIController:
         self.gameTimes = 0
         self.epsilon = 0 
         self.gamma = 0.9 
-        self.model = SnakeAIModal(11 + tileCountX * tileCountY, 1280, 3)
+        self.model = SnakeAIModal(11 + tileCountX * tileCountY, 2048, 3)
         # self.model = SnakeAIModal(11 + tileCountX * tileCountY, 256, 3)
         self.memory = deque(maxlen=MAX_MEMORY) 
         self.trainer = SnakeAITrainer(self.model, lr=LR, gamma=self.gamma)

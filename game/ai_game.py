@@ -63,9 +63,9 @@ from .dead import *
 # 但是在此之后，由于蛇自身的身体已经很长，会出现两种情况，1.为了避免撞上身体产生的绕路，导致超过给定时间而死；2.在寻找食物时卷到自己身体围成的死胡同里，导致撞上自己而死
 # 对于问题1，可以使用更宽松的时间限制条件解决。对于问题2，如何让AI实现路径规划，是一个难点。
 # 在现在这个时候，我想能否将整个地图数据传递给训练模型，看AI能否从宏观方向上了解整体布局，自我规划。
-# 依然以矩阵为例，9的位置代表食物，2的位置代表蛇头，1的位置代表蛇身，0的位置表示空地。
+# 依然以矩阵为例，4代表蛇头在地图上的位置 3代表蛇身在地图上的位置 9代表食物在地图上的位置
 #  0 0 0 0 0 0 0 0 
-#  2 1 1 0 0 0 0 0
+#  4 3 3 0 0 0 0 0
 #  0 0 0 0 0 0 0 0 
 #  0 0 0 0 0 0 0 0 
 #  0 0 0 0 0 9 0 0 
@@ -85,7 +85,7 @@ class AIGame:
 
         self.screen = pygame.display.set_mode((self.tileCountX * self.singleTileWidth,self. tileCountY * self.singleTileHeight))
         self.clock  = pygame.time.Clock()
-        self.gameSpeed = 60
+        self.gameSpeed = 120
         self.initSnakeLength = 3
         
         self.snake = None
@@ -94,7 +94,7 @@ class AIGame:
         self.dead = None
         self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给100步的限额
         self.notEatLimit = 100
-        self.notEatLimitUpRate = 1.5
+        self.notEatLimitUpRate = 1
 
     # 初始化游戏，设置蛇，分数，食物，死亡图片
     def initGame(self):
@@ -159,10 +159,10 @@ class AIGame:
 
         # 在地图中添加蛇的位置信息
         for i in range(snakeLength - 1, 0, -1):
-            if(i == 0):
-                mapInfo[body[i][1]][body[i][0]] = 2
+            if i == 0:
+                mapInfo[body[i][1]][body[i][0]] = 4
             else:
-                mapInfo[body[i][1]][body[i][0]] = 1
+                mapInfo[body[i][1]][body[i][0]] = 3
         
         # 在地图中添加食物的位置信息
         mapInfo[body[i][1]][body[i][0]] = 9

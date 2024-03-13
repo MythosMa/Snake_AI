@@ -46,8 +46,8 @@ while True:
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
             
-            print(f"Game {aiContoller.gameTimes} end. Score Recore: {recordScore}")
+            print(f"Game {aiContoller.gameTimes} end. Score Record: {recordScore}")
 
-        time.sleep(1)
+        # time.sleep(1)
         game.initGame()
     
