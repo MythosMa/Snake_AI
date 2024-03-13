@@ -48,6 +48,6 @@ while True:
             
             print(f"Game {aiContoller.gameTimes} end. Score Record: {recordScore}")
 
-        # time.sleep(1)
+        time.sleep(1)
         game.initGame()
     
