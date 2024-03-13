@@ -10,11 +10,14 @@ LR = 0.001 # 学习率
 # 定义一个SnakeAIController类，用于控制AI游戏
 class SnakeAIController:
     # 初始化类，设置游戏次数、epsilon、gamma、模型、记忆库、训练器
-    def __init__(self):
+    def __init__(self, tileCountX, tileCountY):
+        self.tileCountX = tileCountX,
+        self.tileCountY = tileCountY,
         self.gameTimes = 0
         self.epsilon = 0 
         self.gamma = 0.9 
-        self.model = SnakeAIModal(11, 256, 3)
+        self.model = SnakeAIModal(11 + tileCountX * tileCountY, 1280, 3)
+        # self.model = SnakeAIModal(11 + tileCountX * tileCountY, 256, 3)
         self.memory = deque(maxlen=MAX_MEMORY) 
         self.trainer = SnakeAITrainer(self.model, lr=LR, gamma=self.gamma)
 
