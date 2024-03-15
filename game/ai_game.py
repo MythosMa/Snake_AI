@@ -1,3 +1,4 @@
+import time
 import pygame
 import numpy as np
 from .config import *
@@ -85,7 +86,7 @@ class AIGame:
 
         self.screen = pygame.display.set_mode((self.tileCountX * self.singleTileWidth,self. tileCountY * self.singleTileHeight))
         self.clock  = pygame.time.Clock()
-        self.gameSpeed = 120
+        self.gameSpeed = 60
         self.initSnakeLength = 3
         
         self.snake = None
@@ -94,7 +95,7 @@ class AIGame:
         self.dead = None
         self.notEatTime = 0 # 这个参数是用来阻止AI长时间乱转不吃东西的，每吃过一食物给100步的限额
         self.notEatLimit = 100
-        self.notEatLimitUpRate = 1
+        self.notEatLimitUpRate = 1.1
 
     # 初始化游戏，设置蛇，分数，食物，死亡图片
     def initGame(self):
@@ -127,7 +128,7 @@ class AIGame:
         self.food.update(self.screen, self.snake.getSnakeBody(), self.tileCountX, self.tileCountY)
 
         if self.notEatTime >= self.notEatLimit * len(self.snake.getSnakeBody()) * self.notEatLimitUpRate:
-            return -1, True, self.score.getScore()
+            return -10, True, self.score.getScore()
         else:
             reward, isDead = self.snake.update(self.food, self.score)
 
@@ -158,16 +159,31 @@ class AIGame:
         mapInfo = [[0 for _ in range(self.tileCountX)] for _ in range(self.tileCountY)]
 
         # 在地图中添加蛇的位置信息
-        for i in range(snakeLength - 1, 0, -1):
-            if i == 0:
-                mapInfo[body[i][1]][body[i][0]] = 4
-            else:
-                mapInfo[body[i][1]][body[i][0]] = 3
+        for i in range(0, snakeLength, 1):
+            if(body[i][1] < len(mapInfo) and body[i][0] < len(mapInfo[body[i][1]])):
+                if i == 0:
+                    mapInfo[body[i][1]][body[i][0]] = 4
+                else:
+                    mapInfo[body[i][1]][body[i][0]] = 3
         
         # 在地图中添加食物的位置信息
-        mapInfo[body[i][1]][body[i][0]] = 9
+        mapInfo[self.food.getPosition()[1]][self.food.getPosition()[0]] = 9
 
-        state = [
+        state = []
+
+        # 将地图信息追加到state 中 
+        for sublist in mapInfo:
+            state.extend(sublist)
+
+        info = [
+            # 信息分隔符
+            5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+            # 蛇头代表的值
+            4,
+            # 蛇身代表的值
+            3,
+            # 食物代表的值
+            9,
             # 向前是否会导致死亡
             (isSnakeToLeft and snakeHead[0] == 0) or 
             (isSnakeToLeft and checkCollisionBody([snakeHead[0] - 1, snakeHead[1]])) or
@@ -210,10 +226,18 @@ class AIGame:
             self.food.getPosition()[1] < snakeHead[1],
             # 在下边
             self.food.getPosition()[1] > snakeHead[1],
+
+            # 移动的步数
+            self.notEatTime,
+
+            # 移动上限
+            self.notEatLimit * len(self.snake.getSnakeBody()) * self.notEatLimitUpRate,
         ]
 
-        # 将地图信息追加到state 中 
-        for sublist in mapInfo:
-            state.extend(sublist)
+        print("↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
+        print(info)
+        print("↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑")
+
+        state.extend(info)
 
         return np.array(state, dtype=int)

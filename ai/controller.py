@@ -16,8 +16,9 @@ class SnakeAIController:
         self.gameTimes = 0
         self.epsilon = 0 
         self.gamma = 0.9 
-        self.model = SnakeAIModal(11 + tileCountX * tileCountY, 2048, 3)
-        # self.model = SnakeAIModal(11 + tileCountX * tileCountY, 256, 3)
+        self.randomGameCount = 100
+        self.model = SnakeAIModal(33 + tileCountX * tileCountY, 1024, 3)
+        # self.model = SnakeAIModal(11, 256, 3)
         self.memory = deque(maxlen=MAX_MEMORY) 
         self.trainer = SnakeAITrainer(self.model, lr=LR, gamma=self.gamma)
 
@@ -43,9 +44,9 @@ class SnakeAIController:
 
     # 根据状态获取动作，如果随机因子小于 epsilon，则随机获取动作，否则根据状态获取动作；
     def getAction(self, state):
-        self.epsilon = 80 - self.gameTimes
+        self.epsilon = self.randomGameCount - self.gameTimes
         final_move = [0,0,0]
-        if random.randint(0, 200) < self.epsilon:
+        if random.randint(0, self.randomGameCount // 2) < self.epsilon:
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
